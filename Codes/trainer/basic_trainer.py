@@ -101,11 +101,6 @@ class Operate():
                 gnd_path = os.path.join('real_samples', save_name)
                 save_name = os.path.join(self.config.common.plots_folder, save_name)
                 imgs = imgs.squeeze()
-                # plt.figure(figsize=(3, 3))
-                # plt.imshow()
-                # # plt.tight_layout()
-                # plt.axis('off')
-                # plt.savefig('one_image', bbox_inches=0)
                 def make_image(data, outputname, size=(1, 1), dpi=80):
                     fig = plt.figure()
                     fig.set_size_inches(size)
@@ -128,124 +123,12 @@ class Operate():
                 else:
                     pred_imgs = self.model(rep_phon.long(), use_gen=self.gen_model)
                 rep_phon = rep_phon.detach().cpu()
-                # print(pred_imgs.shape)
-                # logger.info('uploading_samples')
-                fig, ax = plt.subplots(1, 3, figsize=(3, 1))
-                # print(pred_imgs.shape)
-                # print(pred_imgs.detach().permute(0, 2, 3, 1).cpu().numpy().shape)
-                # print(imgs.detach().permute(0, 2, 3, 1).cpu().numpy().shape)
-                # with open('cvae.npy', 'wb') as f:
-                #     np.save(f, pred_imgs.detach().permute(0, 2, 3, 1).cpu().numpy())
-                # # with open('real.npy', 'wb') as f:
-                # #     np.save(f, imgs.detach().permute(0, 2, 3, 1).cpu().numpy())
-                # exit()
-                # data = pred_imgs.detach().permute(0, 2, 3, 1).cpu().numpy()[10:13]
-                # print(data.shape)
-                # for i in range(3):
-                #     ax[i].imshow(data[i])
-                #     ax[i].axis('off')
-                # plt.tight_layout()
-                # plt.subplots_adjust(wspace=0.1, hspace=0.1)
-                # plt.savefig('3img_baseline')
-                # exit()
+                
                 model_segnet = model_segnet.to('cpu')
                 mask1_out, mask2_out, mask3_out = model_segnet(pred_imgs.cpu()) #.cpu()
-                pred_imgs = pred_imgs.detach().cpu()
-                mask1_out = mask1_out.detach().cpu()
-                mask2_out = mask2_out.detach().cpu()
-                mask3_out = mask3_out.detach().cpu()
+
                 model_segnet = model_segnet.cpu()
                 mask1_real, mask2_real, mask3_real = model_segnet(imgs.cpu())
-                # mask1_out = torch.argmax(softmax(mask1_out), 1)[0].squeeze().detach().cpu().numpy()
-                # mask2_out = torch.argmax(softmax(mask2_out), 1)[0].squeeze().detach().cpu().numpy()
-                # mask3_out = torch.argmax(softmax(mask3_out), 1)[0].squeeze().detach().cpu().numpy()
-
-                # mask1_out = softmax(mask1_out.detach().cpu())
-                # mask2_out = softmax(mask2_out.detach().cpu())
-                # mask3_out = softmax(mask3_out.detach().cpu())
-                mask1_out = torch.argmax(softmax(mask1_out), 1).squeeze().detach().cpu()#.cpu().numpy()
-                mask2_out = torch.argmax(softmax(mask2_out), 1).squeeze().detach().cpu()#.cpu().numpy()
-                mask3_out = torch.argmax(softmax(mask3_out), 1).squeeze().detach().cpu()#.cpu().numpy()
-                
-                # mask1_class1 = mask1_out[:, 1, :, :].unsqueeze(1)
-                # mask2_class1 = mask2_out[:, 1, :, :].unsqueeze(1)
-                # mask3_class1 = mask3_out[:, 1, :, :].unsqueeze(1)
-                # plt.imshow(mask1_class1[0][0].cpu().numpy())
-                # plt.savefig('1prob')
-                
-                mask1_real = torch.argmax(softmax(mask1_real), 1).squeeze().detach().cpu()#.cpu().numpy()
-                mask2_real = torch.argmax(softmax(mask2_real), 1).squeeze().detach().cpu()#.cpu().numpy()
-                mask3_real = torch.argmax(softmax(mask3_real), 1).squeeze().detach().cpu()#.cpu().numpy()
-                fig, ax = plt.subplots(2, 4, figsize=(6, 3))
-                print(imgs.shape, pred_imgs.shape, mask1_out.shape, mask1_real.shape)
-                ax[0][0].imshow(imgs[0].permute(1, 2, 0).detach().cpu().numpy())
-                ax[1][0].imshow(pred_imgs[0].permute(1, 2, 0).detach().cpu().numpy())
-
-                ax[0][1].imshow(mask1_real[0].detach().cpu().numpy())
-                ax[1][1].imshow(mask1_out[0].detach().cpu().numpy())
-
-                ax[0][2].imshow(mask2_real[0].detach().cpu().numpy())
-                ax[1][2].imshow(mask2_out[0].detach().cpu().numpy())
-
-                ax[0][3].imshow(mask3_real[0].detach().cpu().numpy())
-                ax[1][3].imshow(mask3_out[0].detach().cpu().numpy())
-                smooth = 1
-                scores = []
-                for l in range(3):
-                    iflat = mask1_out[l].contiguous().view(-1)
-                    tflat = mask1_real[l].contiguous().view(-1)
-                    intersection = (iflat * tflat).sum()
-                    score = ((2. * intersection + smooth) / (iflat.sum() + tflat.sum() + smooth))
-                    scores.append(score)
-                for i in range(2):
-                    for j in range(4):
-                        ax[i][j].tick_params(
-                                axis='both',          # changes apply to the x-axis
-                                which='both',      # both major and minor ticks are affected
-                                bottom=False,      # ticks along the bottom edge are off
-                                top=False,
-                                left=False,         # ticks along the top edge are off
-                                labelbottom=False)
-                        ax[i][j].set_yticklabels([])
-                label = ['(a)', '(b)', '(c)', '(d)']
-                for l in range(3):
-                    ax[0][l+1].set_title(f'{round(scores[l].item(),4)}')
-                    ax[1][l+1].set_xlabel(label[l+1])
-                
-                ax[1][0].set_xlabel(label[0])
-                plt.subplots_adjust(wspace=0.1, hspace=0.1)
-                # plt.tight_layout()
-                plt.savefig('mask_image')
-                exit()
-                plt.clf()
-                plt.figure(figsize=(3, 3))
-                plt.imshow(mask2_real[0]*4)
-                
-                plt.axis('off')
-                plt.savefig('real_mask')
-                exit()
-                smooth = 1
-                scores = []
-                for input, target in zip([mask1_class1, mask2_class1, mask3_class1], [mask1_real, mask2_real, mask3_real]):
-                    # print(input.shape, target.shape)
-                    # print(torch.unique(input))
-                    iflat = input.contiguous().view(-1)
-                    tflat = target.contiguous().view(-1)
-                    intersection = (iflat * tflat).sum()
-                    score = ((2. * intersection + smooth) / (iflat.sum() + tflat.sum() + smooth))
-                    scores.append(score)
-                mask_wise_score.append(scores)
-                # print(scores)
-                # exit()
-        # self.end_of_epoch(mode, pred_imgs ,imgs)
-        # print(sum(scores)/len(scores), np.std(scores))
-        mask_wise_score = np.array(mask_wise_score)
-        means = np.mean(mask_wise_score, 0)
-        stds = np.std(mask_wise_score, 0)
-        means = [round(m, 4) for m in means]
-        stds = [(round(m, 3)) for m in stds]
-        print(means, stds)
-        logger.info('Done!')
         return
         
     def end_of_epoch(self, mode, out, real):
@@ -296,7 +179,6 @@ class Operate():
             logger.info(f'Loaded {chk} for spk {self.config.data.filter}')
             assert self.config.data.filter in chk
             self.test(testLoader)
-            # self.trainloop(valLoader, 'val', break_run=True)
 
 
 
