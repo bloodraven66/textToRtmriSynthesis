@@ -1,0 +1,64 @@
+data:
+  data_path: ../full_data/rtmri_data/preprocessed/
+  manifest_loc: ../full_data/rtmri_data/manifests
+  video_folder: clipped_video
+  image_folder: images
+  audio_folder: clipped_aud
+  phon_folder: label
+  phonid_folder: label_ids
+  dur_folder: dur
+  feats: ../full_data/rtmri_data/for_training
+  dump_feats: false
+  phonseq_folder: label_seq
+  phonseqid_folder: label_seq_ids
+  fps: 23.18
+  train_subjects: [F1, F2, F3, F4, M1, M2, M3, M4]
+  test_subjects: [F5, M5]
+  test_set: [unseen_sent_seen_spk_test]
+  filter: 'F4'
+  apply_filter: true
+
+common:
+  batch_size: 1
+  image_size: 64
+  shuffle: True
+  device: cuda:0
+  epochs: 101
+  infer: true
+  upload_freq: 4
+  chk_postfix: ''
+  plots_folder: cvae_samples
+
+optimizer:
+  lr: 0.01
+  weightdecay: 0.000001
+
+transform:
+
+generative_config:
+  path: ../full_data/rtmri_data/split_images
+  batch_size: 64
+  epochs: 5
+  upload_freq: 1
+
+segnet_config:
+  video_path: atb_testing_data/110_videos/
+  mask_path: atb_testing_data/mat_110/
+  save_path: atb_testing_data/processed/
+  dump_feats: false
+  load_chk: true
+
+select_model:
+  name: fastspeech_with_resnet #fastspeech_with_resnet, vae, segnet
+  conv: 3d  #2d or 3d
+  use_vae: true
+  use_conv_on_gen: false
+  concat_and_reduce: true
+  infer_chk: _fastspeech_with_resnet_gen_modelTrue_cvae.pth #_fastspeech_with_resnet_gen_modelTrue_cvae.pth #_fastspeech_with_resnet_.pth
+
+logging:
+  project_name: '' #wandb project name
+  notes: phoneme to rtmri with transformer
+  tags: ''
+  run_name: demo
+  disable: false
