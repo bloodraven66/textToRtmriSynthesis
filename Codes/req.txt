@@ -1,0 +1,13 @@
+attrdict==2.0.1
+audioread==2.1.9
+coloredlogs==15.0.1
+librosa==0.8.0
+matplotlib==3.5.1
+moviepy==1.0.3
+numba==0.48.0
+numpy==1.23.5
+scipy==1.10.0
+torch==1.10.1
+torchvision==0.11.2+cu113
+tqdm==4.64.1
+wandb==0.12.0
